@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# ============================================
-# АВТОМАТИЧЕСКАЯ УСТАНОВКА RUNPOD
-# ============================================
-
-set -e  # Остановка при ошибке
+set -e
 
 echo "=========================================="
 echo "ШАГ 1: Клонирование конфигурации"
@@ -12,7 +8,6 @@ echo "=========================================="
 export HF_HOME="/workspace"
 cd /workspace
 
-# Клонируем ваш репо с конфигами
 if [ -d "runpod-setup" ]; then
     echo "Репо уже существует, обновляем..."
     cd runpod-setup
@@ -22,14 +17,23 @@ else
     git clone https://github.com/kirillkoks999-oss/runpod-setup.git
 fi
 
-# Копируем файлы в workspace
 cp -r runpod-setup/* /workspace/
 chmod +x /workspace/RunPod_Install.sh
 
 echo "=========================================="
 echo "ШАГ 2: Запуск RunPod_Install.sh"
 echo "=========================================="
-./RunPod_Install.sh
+cd /workspace
+nohup ./RunPod_Install.sh > /workspace/install.log 2>&1 &
+INSTALL_PID=$!
+
+echo "Установка запущена в фоне (PID: $INSTALL_PID). Ждем завершения..."
+while kill -0 $INSTALL_PID 2>/dev/null; do
+    echo "Установка продолжается..."
+    sleep 10
+done
+
+echo "✅ RunPod_Install.sh завершен"
 
 echo "=========================================="
 echo "ШАГ 3: Установка системных зависимостей"
@@ -58,6 +62,7 @@ echo "=========================================="
 echo "ШАГ 4: Установка SwarmUI"
 echo "=========================================="
 
+cd /workspace
 if [ ! -d "SwarmUI" ]; then
     echo "Клонируем SwarmUI..."
     git clone --depth 1 https://github.com/mcmonkeyprojects/SwarmUI
@@ -87,68 +92,80 @@ echo "=========================================="
 echo "ШАГ 5: Установка Python библиотек"
 echo "=========================================="
 cd /workspace
-pip install -q gradio huggingface_hub hf_transfer hf_xet
+pip install -q gradio huggingface_hub[cli] hf_transfer hf_xet
 echo "✅ Python библиотеки установлены"
 
 echo "=========================================="
 echo "ШАГ 6: Скачивание моделей"
 echo "=========================================="
 
-export HUGGING_FACE_HUB_TOKEN="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"
+export HUGGING_FACE_HUB_TOKEN="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"
 
 # Создаем папки для моделей
 mkdir -p /workspace/ComfyUI/models/checkpoints
 mkdir -p /workspace/ComfyUI/models/loras
 
-# Пример 1: Скачивание checkpoint с HuggingFace
-echo "Скачиваем lily_model.safetensors..."
+# Скачивание checkpoint через huggingface-cli
+echo "Скачиваем Lily.safetensors через HuggingFace CLI..."
 cd /workspace/ComfyUI/models/checkpoints/
-if [ ! -f "lily_model.safetensors" ]; then
-    wget --header="Authorization: Bearer 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" \
-      https://huggingface.co/rillky/Lily/resolve/main/lily_model.safetensors
-    echo "✅ lily_model.safetensors скачан"
+if [ ! -f "Lily.safetensors" ]; then
+    huggingface-cli download rillky/Lily Lily.safetensors --local-dir . --token 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
+    echo "✅ Lily.safetensors скачан"
 else
-    echo "lily_model.safetensors уже существует"
+    echo "Lily.safetensors уже существует"
 fi
 
-# Пример 2: Скачивание LoRA с Civitai
-echo "Скачиваем LoRA..."
+# Скачивание LoRA с Civitai
+echo "Скачиваем UltraRealistic_Flux LoRA..."
 cd /workspace/ComfyUI/models/loras/
-if [ ! -f "example_lora.safetensors" ]; then
-    wget -O example_lora.safetensors \
-      "https://civitai.com/api/download/models/801399?type=Model&format=SafeTensor"
-    echo "✅ LoRA скачана"
+if [ ! -f "UltraRealistic_Flux.safetensors" ]; then
+    wget "https://civitai.com/api/download/models/1026423?type=Model&format=SafeTensor" -O UltraRealistic_Flux.safetensors
+    echo "✅ UltraRealistic_Flux.safetensors скачана"
 else
-    echo "LoRA уже существует"
+    echo "UltraRealistic_Flux.safetensors уже существует"
 fi
 
-# ДОБАВЬТЕ ЗДЕСЬ СВОИ МОДЕЛИ:
-# echo "Скачиваем вашу_модель..."
-# cd /workspace/ComfyUI/models/checkpoints/
-# wget --header="Authorization: Bearer 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" \
-#   https://huggingface.co/автор/модель/resolve/main/файл.safetensors
-
 echo "=========================================="
-echo "ШАГ 7: Запуск сервисов"
+echo "ШАГ 7: Запуск SwarmUI"
 echo "=========================================="
 
-# Запуск SwarmUI в фоне
-echo "Запускаем SwarmUI..."
 cd /workspace/SwarmUI
+echo "Запускаем SwarmUI в фоне..."
 nohup ./launch-linux.sh --launch_mode none --cloudflared-path cloudflared --port 7861 > /workspace/swarm.log 2>&1 &
-echo "✅ SwarmUI запущен (логи: /workspace/swarm.log)"
-echo "Ждем 10 секунд для инициализации..."
-sleep 10
+echo "✅ SwarmUI запущен в фоне"
 
-# Запуск Gradio приложения
-echo "Запускаем Gradio приложение..."
+echo ""
+echo "Ждем 15 секунд для получения ссылки SwarmUI..."
+sleep 15
+
+# Извлекаем ссылку на SwarmUI из логов
+echo ""
+echo "========================================"
+echo "🔗 ССЫЛКА НА SWARMUI:"
+echo "========================================"
+grep -i "cloudflare\|https://.*trycloudflare.com" /workspace/swarm.log | tail -5
+echo "========================================"
+echo ""
+echo "Полные логи SwarmUI: /workspace/swarm.log"
+echo "Команда для просмотра: tail -f /workspace/swarm.log"
+echo ""
+
+echo "=========================================="
+echo "ШАГ 8: Запуск Gradio приложения"
+echo "=========================================="
+
 cd /workspace
-export HUGGING_FACE_HUB_TOKEN="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"
+export HUGGING_FACE_HUB_TOKEN="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"
+
+echo ""
+echo "========================================"
+echo "🚀 Запускаем Gradio приложение..."
+echo "========================================"
+echo "Ссылка появится ниже:"
+echo ""
+
 python -W ignore Downloader_Gradio_App.py --share
 
 echo "=========================================="
 echo "✅ ВСЕ ГОТОВО!"
-echo "=========================================="
-echo "SwarmUI: проверьте /workspace/swarm.log"
-echo "Gradio: должен запуститься выше"
 echo "=========================================="
