@@ -1,0 +1,52 @@
+
+10 July 2025 : MultiTalk Full Tutorial With 1-Click Installer (shows Windows, RunPod and Massed Compute) : https://www.youtube.com/watch?v=8cMIwS9qo4M
+
+5 May 2025 Main Install Tutorial : https://youtu.be/fTzlQ0tjxj0
+
+19 May 2025 Wan 2.1 Image-to-Video and Text-to-Video Tutorial : https://www.youtube.com/watch?v=XNcn845UXdw
+
+
+
+SwarmUI main post and instructions and links : https://www.patreon.com/posts/106135985
+
+Stable Diffusion 3.5 Large How To Use Tutorial With Best Configuration and Comparison With FLUX DEV
+
+https://youtu.be/-zOKhoO9a5s
+
+FLUX Full Fine-Tuning / DreamBooth Tutorial That Shows A Lot Info Regarding SwarmUI Latest
+
+https://youtu.be/FvpWy1x5etM
+
+Full FLUX Tutorial - FLUX Beats Midjourney for Real
+
+https://youtu.be/bupRePUOA18
+
+CausVid LoRA V2 of Wan 2.1 Brings Massive Quality Improvements, Better Colors and Saturation
+
+https://youtu.be/1rAwZv0hEcU
+
+Main Windows SwarmUI Tutorial (Watch To Learn How to Use)
+
+How to install and use. You have to watch this to learn how to use SwarmUI
+
+Has 70 chapters and manually fixed captions
+
+https://youtu.be/HKX8_F1Er_w
+
+Cloud Tutorial (Massed Compute - RunPod - Kaggle)
+
+If you don't have a powerful GPU or you want to use powerful GPU this is the tutorial you need
+
+48 GB A6000 GPU is only 31 cents per hour on Massed Compute with our special coupon
+
+https://youtu.be/XFUZof6Skkw
+
+Free Kaggle Account Notebook for GPU-Poor
+
+Installs latest version of SwarmUI on a free Kaggle account
+
+Works with Dual T4 GPU at the same time
+
+Supports SD 1.5, SDXL, SD3, FLUX and Stable Cascade and more
+
+Download from here : https://www.patreon.com/posts/106650931
