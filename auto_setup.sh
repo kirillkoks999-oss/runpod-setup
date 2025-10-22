@@ -106,22 +106,28 @@ echo "=========================================="
 mkdir -p /workspace/ComfyUI/models/checkpoints
 mkdir -p /workspace/ComfyUI/models/loras
 
-# Скачивание checkpoint через huggingface-cli
+# Скачивание checkpoint через huggingface-cli (не прерывать скрипт при ошибке)
 echo "Скачиваем Lily.safetensors через HuggingFace CLI..."
 cd /workspace/ComfyUI/models/checkpoints/
 if [ ! -f "Lily.safetensors" ]; then
-    huggingface-cli download rillky/Lily Lily.safetensors --local-dir . --token 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
-    echo "✅ Lily.safetensors скачан"
+    if hf download rillky/Lily Lily.safetensors --local-dir . --token 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 2>/dev/null; then
+        echo "✅ Lily.safetensors скачан"
+    else
+        echo "⚠️ Ошибка скачивания Lily.safetensors (проверьте токен). Продолжаем..."
+    fi
 else
     echo "Lily.safetensors уже существует"
 fi
 
-# Скачивание LoRA с Civitai
+# Скачивание LoRA с Civitai (не прерывать скрипт при ошибке)
 echo "Скачиваем UltraRealistic_Flux LoRA..."
 cd /workspace/ComfyUI/models/loras/
 if [ ! -f "UltraRealistic_Flux.safetensors" ]; then
-    wget "https://civitai.com/api/download/models/1026423?type=Model&format=SafeTensor" -O UltraRealistic_Flux.safetensors
-    echo "✅ UltraRealistic_Flux.safetensors скачана"
+    if wget -q "https://civitai.com/api/download/models/1026423?type=Model&format=SafeTensor" -O UltraRealistic_Flux.safetensors 2>/dev/null; then
+        echo "✅ UltraRealistic_Flux.safetensors скачана"
+    else
+        echo "⚠️ Ошибка скачивания LoRA. Продолжаем..."
+    fi
 else
     echo "UltraRealistic_Flux.safetensors уже существует"
 fi
