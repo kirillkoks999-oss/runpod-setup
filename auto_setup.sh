@@ -2,10 +2,13 @@
 
 set -e
 
+# Устанавливаем токены и переменные окружения
+export HF_HOME="/workspace"
+export HUGGING_FACE_HUB_TOKEN="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"
+
 echo "=========================================="
 echo "ШАГ 1: Клонирование конфигурации"
 echo "=========================================="
-export HF_HOME="/workspace"
 cd /workspace
 
 if [ -d "runpod-setup" ]; then
@@ -99,8 +102,6 @@ echo "=========================================="
 echo "ШАГ 6: Скачивание моделей"
 echo "=========================================="
 
-export HUGGING_FACE_HUB_TOKEN="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"
-
 # Создаем папки для моделей
 mkdir -p /workspace/ComfyUI/models/checkpoints
 mkdir -p /workspace/ComfyUI/models/loras
@@ -155,7 +156,6 @@ echo "ШАГ 8: Запуск Gradio приложения"
 echo "=========================================="
 
 cd /workspace
-export HUGGING_FACE_HUB_TOKEN="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"
 
 echo ""
 echo "========================================"
